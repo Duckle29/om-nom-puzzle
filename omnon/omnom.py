@@ -3,16 +3,17 @@ import sys
 import random
 
 import pygame
+from PIL import Image
 
 from .omnon_exceptions import Glutton
 
 SCREEN_SIZE = (1600, 900)
 
 
-
 class Piece(object):
     def __init__(self, postion, surface):
         self.postion = postion
+        self.surface = surface
         pass
     
     def draw(self):
@@ -29,13 +30,26 @@ class Puzzle(object):
     def __init__(self, grid_size=(10,10), grid_surface_texture=Path('media/default.jpg')):
         self.grid_size = grid_size
         self.generate_pieces()
-        pass
+        self.pieces = []
+        self.im = Image.open(grid_surface_texture)
     
     def set_grid_size(self, size):
-        pass
+        self.grid_size = size
+        generate_pieces()
 
     def generate_pieces(self):
-        pass
+        piece_size = (
+            im.width // self.grid_size[0],
+            im.height // self.grid_size[1]
+        )
+
+        crop_coords = (0, 0, piece_size[0], piece_size[1])
+
+        for idx_y, y in enumerate(range(im.width // self.grid_size[1])):
+            for idx_x, x in enumerate(range(im.height // self.grid_size[0])):
+                surface = im.crop(crop_coords)
+                p = Piece((idx_x, idx_y), surface)
+                self.pieces.append(p)
 
     def get_piece(self, coordinate):
         pass
