@@ -3,13 +3,15 @@ import sys
 import os
 from random import random
 from math import hypot
+from ctypes import POINTER, WINFUNCTYPE, windll
+from ctypes.wintypes import BOOL, HWND, RECT
 
 import pygame as pg
 
 from omnon_exceptions import Glutton
 from config import colors
 
-SCREEN_SIZE = (1600, 900)
+SCREEN_SIZE = (640, 400)
 
 media_dir = Path('media')
 
@@ -121,6 +123,22 @@ def draw_background(surf, offset):
     surf.fill(colors['lines'], (offset-padding, offset-padding, surf.get_width()/2 + 2*padding, surf.get_height()-offset*2 + padding*2))
     surf.fill(colors['puzzle_area'], (offset, offset, surf.get_width()/2, surf.get_height()-offset*2))
 
+def get_window_rect():
+    # get our window ID:
+    hwnd = pg.display.get_wm_info()["window"]
+
+    # Jump through all the ctypes hoops:
+    prototype = WINFUNCTYPE(BOOL, HWND, POINTER(RECT))
+    paramflags = (1, "hwnd"), (2, "lprect")
+
+    GetWindowRect = prototype(("GetWindowRect", windll.user32), paramflags)
+
+    # finally get our data!
+    rect = GetWindowRect(hwnd)
+
+    return rect
+
+
 
 def main():
     offset = 30
@@ -140,12 +158,14 @@ def main():
     h = screen.get_height() - offset*2
     scramble_rect = pg.Rect((main_surf_rect.right + offset, offset), (w,h))
 
-    puzzle = Puzzle(main_surf, main_surf_rect, scramble_rect, (10,15))
+    puzzle = Puzzle(main_surf, main_surf_rect, scramble_rect, (3,3))
     piece = None
 
     while(True):
         pg.display.flip()
         clock.tick(120)
+        win_rect = get_window_rect()
+        #print(f"{win_rect.left}, {win_rect.top}, {win_rect.right}, {win_rect.bottom}")
 
         if piece is not None:
             piece.rect.center = pg.mouse.get_pos()
