@@ -10,8 +10,9 @@ import pygame as pg
 
 from omnon_exceptions import Glutton
 from config import colors
+from tobii import MahEye
 
-SCREEN_SIZE = (640, 400)
+SCREEN_SIZE = (1600, 900)
 
 media_dir = Path('media')
 
@@ -56,7 +57,6 @@ class Piece(object):
 
 
 class Puzzle(object):
-    
     pieces = []
 
     def __init__(self, grid_surface_texture, puzzle_rect, scramble_rect, grid_size=(10,10)):
@@ -139,6 +139,7 @@ def get_window_rect():
 
     return rect
 
+
 def get_screen_resolution():
     user32 = windll.user32
     return = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
@@ -190,17 +191,20 @@ def main():
     h = screen.get_height() - offset*2
     scramble_rect = pg.Rect((main_surf_rect.right + offset, offset), (w,h))
 
+    mah_eye = MahEye()
+
+
     puzzle = Puzzle(main_surf, main_surf_rect, scramble_rect, (3,3))
     piece = None
 
     while(True):
-        screen_to_game_pos((1,1))
-
         pg.display.flip()
         clock.tick(120)
 
         if piece is not None:
-            piece.rect.center = pg.mouse.get_pos()
+            # piece.rect.center = pg.mouse.get_pos()
+            piece.rect.center = mah_eye.get_pos()
+
 
         draw_background(screen, offset)
 
@@ -219,7 +223,8 @@ def main():
                 if piece is not None:
                     raise(Glutton(piece.rect.topleft, new_piece.rect.topleft))
                 else:
-                    piece = puzzle.get_piece(pg.mouse.get_pos())
+                    piece = puzzle.get_piece(mah_eye.get_pos())
+                    #piece = puzzle.get_piece(pg.mouse.get_pos())
             elif event.type == pg.MOUSEBUTTONUP:
                 if piece is not None:
                     piece.drop()

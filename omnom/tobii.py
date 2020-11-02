@@ -8,7 +8,7 @@ import time
 import collections
 import math
 
-class mah_eye():
+class MahEye():
     pos = {"left": collections.deque(maxlen=10), "right":collections.deque(maxlen=10)}
     eyetracker = None
 
@@ -110,8 +110,6 @@ class mah_eye():
             return None
 
         return [(left_avg[0]+right_avg[0])/2, (left_avg[1]+right_avg[1])/2]
-
-
 
     def __init__(self):
         self.init_eyetracker()
