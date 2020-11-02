@@ -165,8 +165,9 @@ def screen_to_game_pos(pos):
     pos = int(pos[0] * screen_size[0]), int(pos[1] * screen_size[1])
 
     # Since the top left corner of our win_rect includes the title bar, we reference off of the bottom
-    x = win_rect.left - game_rect.left
-    y = win_rect.bottom - (game_rect.bottom - game_rect.height)
+    x = pos[0] - win_rect.left
+    y = pos[1] - (win_rect.bottom - game_rect.height)
+
 
     x = min(game_rect.width, max(0, x))
     y = min(game_rect.height, max(0, y))
