@@ -196,7 +196,6 @@ def main():
 
     mah_eye = MahEye()
 
-
     puzzle = Puzzle(main_surf, main_surf_rect, scramble_rect, (3,3))
     piece = None
 
@@ -204,7 +203,7 @@ def main():
         pg.display.flip()
         clock.tick(120)
 
-        pg.draw.circle(screen, colors['view_blob'], )
+        pg.draw.circle(screen, colors['view_blob'], screen_to_game_pos(mah_eye.get_pos()), 10)
 
         if piece is not None:
             # piece.rect.center = pg.mouse.get_pos()
