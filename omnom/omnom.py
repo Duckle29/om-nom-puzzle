@@ -115,13 +115,29 @@ class Puzzle(object):
         return selected_piece
 
 
-def draw_background(surf, offset):
+def draw_background(surf, offset, grid_size):
     
     padding = 5
 
     surf.fill(colors['background'])
     surf.fill(colors['lines'], (offset-padding, offset-padding, surf.get_width()/2 + 2*padding, surf.get_height()-offset*2 + padding*2))
     surf.fill(colors['puzzle_area'], (offset, offset, surf.get_width()/2, surf.get_height()-offset*2))
+    puzzle_area = pg.Rect(offset, offset, surf.get_width()/2, surf.get_height()-offset*2)
+
+    line_width_offset = puzzle_area.width/grid_size[0]
+    line_height_offset = puzzle_area.height/grid_size[1]
+
+    for i in range(0, grid_size[0]):
+        pg.draw.line(surf, (150,150,150), (puzzle_area.left + line_width_offset/2 + line_width_offset*i, puzzle_area.top), ( puzzle_area.left + line_width_offset/2 + line_width_offset*i, puzzle_area.bottom), 2)
+
+    for i in range(0, grid_size[1]):
+        pg.draw.line(surf, (150,150,150), (puzzle_area.left, puzzle_area.top + line_height_offset/2 + line_height_offset*i), (puzzle_area.right, puzzle_area.top + line_height_offset/2 + line_height_offset*i), 2)
+
+    for i in range(1, grid_size[0]):
+        pg.draw.line(surf, (0,0,0), (puzzle_area.left + line_width_offset*i, puzzle_area.top), ( puzzle_area.left + line_width_offset*i, puzzle_area.bottom), 2)
+
+    for i in range(1, grid_size[1]):
+        pg.draw.line(surf, (0,0,0), (puzzle_area.left, puzzle_area.top + line_height_offset*i), (puzzle_area.right, puzzle_area.top + line_height_offset*i), 2)
 
 
 def get_window_rect():
@@ -184,8 +200,6 @@ def main():
     screen = pg.display.set_mode(SCREEN_SIZE)
     pg.display.set_caption("Om Nom Puzzle")
 
-    draw_background(screen, offset)
-
     puzzle_img = pg.image.load('media/default.png').convert()
 
     # Scale the image so that it fits in the assigned area.
@@ -212,7 +226,7 @@ def main():
             piece.rect.center = screen_to_game_pos(tobii_pos)
 
 
-        draw_background(screen, offset)
+        draw_background(screen, offset, puzzle.grid_size)
 
         to_blit = []
         for p in puzzle.pieces:
