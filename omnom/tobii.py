@@ -9,7 +9,8 @@ import collections
 import math
 
 class MahEye():
-    pos = {"left": collections.deque(maxlen=10), "right":collections.deque(maxlen=10)}
+    buffer_size = 5
+    pos = {"left": collections.deque(maxlen=buffer_size), "right":collections.deque(maxlen=buffer_size)}
     last_pos = (0,0)
     eyetracker = None
 
@@ -135,7 +136,7 @@ class MahEye():
 
     def __init__(self):
         self.init_eyetracker()
-        self.call_eyetracker_manager()
+        #self.call_eyetracker_manager()
         self.start_eyetracker()
 
     def __del__(self):
