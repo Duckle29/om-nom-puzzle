@@ -1,5 +1,6 @@
 {
     "editor.rulers": [
         150
-    ]
+    ],
+    "python.pythonPath": "venv\\Scripts\\python.exe"
 }
