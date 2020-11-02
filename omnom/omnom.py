@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import os
 from random import random
-from math import hypot
+from math import hypot, floor, ceil
 from ctypes import POINTER, WINFUNCTYPE, windll
 from ctypes.wintypes import BOOL, HWND, RECT
 
@@ -123,6 +123,7 @@ def draw_background(surf, offset):
     surf.fill(colors['lines'], (offset-padding, offset-padding, surf.get_width()/2 + 2*padding, surf.get_height()-offset*2 + padding*2))
     surf.fill(colors['puzzle_area'], (offset, offset, surf.get_width()/2, surf.get_height()-offset*2))
 
+
 def get_window_rect():
     # get our window ID:
     hwnd = pg.display.get_wm_info()["window"]
@@ -138,6 +139,35 @@ def get_window_rect():
 
     return rect
 
+def get_screen_resolution():
+    user32 = windll.user32
+    return = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+
+
+def screen_to_game_pos(pos):
+    """Converts a screen position to an in-game position
+
+    Args:
+        pos (float-tuple): The X,Y position on the monitor represented as factor (0 to 1) of screen resolution
+
+    Returns:
+        tuple: The X,Y position in the game 
+    """
+
+    win_rect = get_window_rect()
+    screen_size = get_screen_resolution()
+    game_rect = pg.display.get_surface().get_rect()
+
+
+
+    # Scale position to screen space
+    pos = int(pos[0] * screen_size[0]), int(pos[1] * screen_size[1])
+
+    # Since the top left corner of our win_rect includes the title bar, we reference off of the bottom
+    x = win_rect.left - game_rect.left
+    y = win_rect.bottom - (game_rect.bottom - game_rect.height)
+
+    return x,y
 
 
 def main():
@@ -146,8 +176,10 @@ def main():
 
     clock = pg.time.Clock()
     screen = pg.display.set_mode(SCREEN_SIZE)
+    pg.display.set_caption("Om Nom Puzzle")
+
     draw_background(screen, offset)
-    
+
     puzzle_img = pg.image.load('media/default.png').convert()
 
     # Scale the image so that it fits in the assigned area.
@@ -162,10 +194,10 @@ def main():
     piece = None
 
     while(True):
+        screen_to_game_pos((1,1))
+
         pg.display.flip()
         clock.tick(120)
-        win_rect = get_window_rect()
-        #print(f"{win_rect.left}, {win_rect.top}, {win_rect.right}, {win_rect.bottom}")
 
         if piece is not None:
             piece.rect.center = pg.mouse.get_pos()
