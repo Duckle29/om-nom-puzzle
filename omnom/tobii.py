@@ -136,7 +136,7 @@ class MahEye():
 
     def __init__(self):
         self.init_eyetracker()
-        #self.call_eyetracker_manager()
+        self.call_eyetracker_manager()
         self.start_eyetracker()
 
     def __del__(self):
