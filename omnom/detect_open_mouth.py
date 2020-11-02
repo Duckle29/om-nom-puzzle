@@ -2,7 +2,7 @@ import time
 
 from scipy.spatial import distance as dist
 import imutils
-from imutils.video import VideoStream
+from imutils.video import VideoStream, WebcamVideoStream
 from imutils import face_utils
 import argparse
 import dlib
