@@ -142,7 +142,7 @@ def get_window_rect():
 
 def get_screen_resolution():
     user32 = windll.user32
-    return = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    return user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 
 def screen_to_game_pos(pos):
@@ -167,6 +167,9 @@ def screen_to_game_pos(pos):
     # Since the top left corner of our win_rect includes the title bar, we reference off of the bottom
     x = win_rect.left - game_rect.left
     y = win_rect.bottom - (game_rect.bottom - game_rect.height)
+
+    x = min(game_rect.width, max(0, x))
+    y = min(game_rect.height, max(0, y))
 
     return x,y
 
@@ -201,9 +204,11 @@ def main():
         pg.display.flip()
         clock.tick(120)
 
+        pg.draw.circle(screen, colors['view_blob'], )
+
         if piece is not None:
             # piece.rect.center = pg.mouse.get_pos()
-            piece.rect.center = mah_eye.get_pos()
+            piece.rect.center = screen_to_game_pos(mah_eye.get_pos())
 
 
         draw_background(screen, offset)
@@ -223,7 +228,7 @@ def main():
                 if piece is not None:
                     raise(Glutton(piece.rect.topleft, new_piece.rect.topleft))
                 else:
-                    piece = puzzle.get_piece(mah_eye.get_pos())
+                    piece = puzzle.get_piece(screen_to_game_pos(mah_eye.get_pos()))
                     #piece = puzzle.get_piece(pg.mouse.get_pos())
             elif event.type == pg.MOUSEBUTTONUP:
                 if piece is not None:
