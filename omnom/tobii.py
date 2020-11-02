@@ -86,8 +86,8 @@ class MahEye():
             [type]: [description]
         """
         
-        pos_left = self.pos['left']
-        pos_right = self.pos['right']
+        pos_left = list(self.pos['left'].copy())
+        pos_right = list(self.pos['right'].copy())
         #print(pos_left, pos_right)
 
         pos_sums = [0, 0]
