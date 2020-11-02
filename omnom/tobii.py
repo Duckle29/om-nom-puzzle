@@ -101,7 +101,7 @@ class MahEye():
         if counts == 0:
             left_avg = None
         else:
-            left_avg = [pos_sums[0]/ len(pos_left, pos_sums[1]/ len(pos_left)]
+            left_avg = [pos_sums[0]/ len(pos_left), pos_sums[1]/ len(pos_left)]
 
         pos_sums = [0, 0]
         counts = len(pos_right)
@@ -117,8 +117,8 @@ class MahEye():
         else:
             right_avg = [pos_sums[0]/ len(pos_right), pos_sums[1]/ len(pos_right)]
 
-        if right_avg is None or left_avg is None:
-            return None
+        #if right_avg is None or left_avg is None:
+        #    return None
 
 
         if left_avg is None or right_avg is None:
@@ -130,7 +130,7 @@ class MahEye():
 
     def __init__(self):
         self.init_eyetracker()
-        self.call_eyetracker_manager()
+        #self.call_eyetracker_manager()
         self.start_eyetracker()
 
     def __del__(self):

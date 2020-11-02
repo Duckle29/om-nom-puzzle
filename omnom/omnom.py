@@ -170,7 +170,8 @@ def screen_to_game_pos(pos):
 
     x = min(game_rect.width, max(0, x))
     y = min(game_rect.height, max(0, y))
-
+    
+    print(x, y)
     return x,y
 
 
@@ -203,9 +204,8 @@ def main():
         pg.display.flip()
         clock.tick(120)
 
-        tobii_pos_x, tobii_pos_y, fresh = mah_eye.get_pos()
-        tobii_pos = tobii_pos_x, tobii_pos_y
-
+        tobii_pos, fresh = mah_eye.get_pos()
+        
         pg.draw.circle(screen, colors['view_blob'], screen_to_game_pos(tobii_pos), 10)
 
         if piece is not None:
