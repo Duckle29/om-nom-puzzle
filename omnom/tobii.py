@@ -10,7 +10,9 @@ import math
 
 class MahEye():
     pos = {"left": collections.deque(maxlen=10), "right":collections.deque(maxlen=10)}
+    last_pos = (0,0)
     eyetracker = None
+
 
     def init_eyetracker(self):
         """ Findes the eyetracker and returns it
@@ -109,7 +111,13 @@ class MahEye():
         if right_avg is None or left_avg is None:
             return None
 
-        return [(left_avg[0]+right_avg[0])/2, (left_avg[1]+right_avg[1])/2]
+        eye_pos = ((left_avg[0]+right_avg[0])/2, (left_avg[1]+right_avg[1])/2)
+
+        if eye_pos[0] is None or eye_pos[1] is None:
+            return self.last_pos, False
+        else:
+            self.last_pos = eye_pos
+            return eye_pos, True
 
     def __init__(self):
         self.init_eyetracker()

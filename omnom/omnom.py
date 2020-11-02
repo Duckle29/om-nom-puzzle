@@ -203,11 +203,14 @@ def main():
         pg.display.flip()
         clock.tick(120)
 
-        pg.draw.circle(screen, colors['view_blob'], screen_to_game_pos(mah_eye.get_pos()), 10)
+        tobii_pos_x, tobii_pos_y, fresh = mah_eye.get_pos()
+        tobii_pos = tobii_pos_x, tobii_pos_y
+
+        pg.draw.circle(screen, colors['view_blob'], screen_to_game_pos(tobii_pos), 10)
 
         if piece is not None:
             # piece.rect.center = pg.mouse.get_pos()
-            piece.rect.center = screen_to_game_pos(mah_eye.get_pos())
+            piece.rect.center = screen_to_game_pos(tobii_pos)
 
 
         draw_background(screen, offset)
@@ -227,7 +230,7 @@ def main():
                 if piece is not None:
                     raise(Glutton(piece.rect.topleft, new_piece.rect.topleft))
                 else:
-                    piece = puzzle.get_piece(screen_to_game_pos(mah_eye.get_pos()))
+                    piece = puzzle.get_piece(screen_to_game_pos(tobii_pos))
                     #piece = puzzle.get_piece(pg.mouse.get_pos())
             elif event.type == pg.MOUSEBUTTONUP:
                 if piece is not None:
