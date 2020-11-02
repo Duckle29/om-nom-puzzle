@@ -202,11 +202,10 @@ def main():
     piece = None
 
     while(True):
+        tobii_pos, fresh = mah_eye.get_pos()
         pg.draw.circle(screen, (255,0,0), screen_to_game_pos(tobii_pos), 10)
         pg.display.flip()
         clock.tick(120)
-
-        tobii_pos, fresh = mah_eye.get_pos()
 
         if piece is not None:
             # piece.rect.center = pg.mouse.get_pos()
