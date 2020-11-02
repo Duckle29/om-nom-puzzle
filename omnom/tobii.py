@@ -80,9 +80,18 @@ class MahEye():
         self.eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback)
 
     def get_pos(self):
+        """Returns the gaze position as ratios of screen resolution
+
+        Returns:
+            [type]: [description]
+        """
+        
+        pos_left = self.pos['left']
+        pos_right = self.pos['right']
+
         pos_sums = [0, 0]
-        counts = len(self.pos['left'])
-        for p in self.pos['left']:
+        counts = len(pos_left)
+        for p in pos_left:
             if math.isnan(p[0]) or math.isnan(p[1]):
                 counts -= 1
                 continue
@@ -92,11 +101,11 @@ class MahEye():
         if counts == 0:
             left_avg = None
         else:
-            left_avg = [pos_sums[0]/ len(self.pos['left']), pos_sums[1]/ len(self.pos['left'])]
+            left_avg = [pos_sums[0]/ len(pos_left, pos_sums[1]/ len(pos_left)]
 
         pos_sums = [0, 0]
-        counts = len(self.pos['right'])
-        for p in self.pos['right']:
+        counts = len(pos_right)
+        for p in pos_right:
             if math.isnan(p[0]) or math.isnan(p[1]):
                 counts -= 1
                 continue
@@ -106,16 +115,16 @@ class MahEye():
         if counts == 0:
             right_avg = None
         else:
-            right_avg = [pos_sums[0]/ len(self.pos['right']), pos_sums[1]/ len(self.pos['right'])]
+            right_avg = [pos_sums[0]/ len(pos_right), pos_sums[1]/ len(pos_right)]
 
         if right_avg is None or left_avg is None:
             return None
 
-        eye_pos = ((left_avg[0]+right_avg[0])/2, (left_avg[1]+right_avg[1])/2)
 
-        if eye_pos[0] is None or eye_pos[1] is None:
+        if left_avg is None or right_avg is None:
             return self.last_pos, False
         else:
+            eye_pos = ((left_avg[0]+right_avg[0])/2, (left_avg[1]+right_avg[1])/2)
             self.last_pos = eye_pos
             return eye_pos, True
 
