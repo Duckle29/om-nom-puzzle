@@ -20,6 +20,7 @@ class MahMouth():
         self.construct_arguments()
         self.detector_predictor()
         self.start_camera()
+        self.isopen = True
 
     def __del__(self):
         # do a bit of cleanup
@@ -74,6 +75,7 @@ class MahMouth():
 
         # detect faces in the grayscale frame
         rects = self.detector(gray, 0)
+        print(rects)
 
         # loop over the face detections
         for rect in rects:
@@ -97,18 +99,17 @@ class MahMouth():
 
             # Draw text if mouth is open
             if mar > mouthcheck.MOUTH_AR_THRESH:
-                isopen = True
+                self.isopen = True
                 cv2.putText(
                     frame, "Mouth is Open!", (30, 60),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             else:
-                isopen = False
+                self.isopen = False
 
         # show the frame
         cv2.imshow("Frame", frame)
 
-        return isopen
-
+        return self.isopen
 
 if __name__ == "__main__":
     mouthcheck = MahMouth()

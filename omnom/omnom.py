@@ -11,6 +11,7 @@ import pygame as pg
 from omnon_exceptions import Glutton
 from config import colors
 from tobii import MahEye
+from detect_open_mouth import MahMouth
 
 SCREEN_SIZE = (1600, 900)
 
