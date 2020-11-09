@@ -98,7 +98,7 @@ class MahMouth():
             cv2.putText(frame, "MAR: {:.2f}".format(mar), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
             # Draw text if mouth is open
-            if mar > mouthcheck.MOUTH_AR_THRESH:
+            if mar > self.MOUTH_AR_THRESH:
                 self.isopen = True
                 cv2.putText(
                     frame, "Mouth is Open!", (30, 60),
@@ -107,7 +107,7 @@ class MahMouth():
                 self.isopen = False
 
         # show the frame
-        cv2.imshow("Frame", frame)
+        #cv2.imshow("Frame", frame)
 
         return self.isopen
 

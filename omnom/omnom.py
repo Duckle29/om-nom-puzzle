@@ -212,6 +212,8 @@ def main():
     scramble_rect = pg.Rect((main_surf_rect.right + offset, offset), (w,h))
 
     mah_eye = MahEye()
+    mah_mouth = MahMouth()
+    mouth_open = True
 
     puzzle = Puzzle(main_surf, main_surf_rect, scramble_rect, (3,3))
     piece = None
@@ -239,21 +241,23 @@ def main():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
-
-            elif event.type == pg.MOUSEBUTTONDOWN:
-                if piece is not None:
-                    raise(Glutton(piece.rect.topleft, new_piece.rect.topleft))
-                else:
-                    piece = puzzle.get_piece(screen_to_game_pos(tobii_pos))
-                    #piece = puzzle.get_piece(pg.mouse.get_pos())
-            elif event.type == pg.MOUSEBUTTONUP:
-                if piece is not None:
-                    piece.drop()
-                    piece = None
             
             elif event.type == pg.KEYDOWN:
                 if event.key == ord('r'):
                     puzzle.scramble()
+
+        if mouth_open != mah_mouth.update():
+            mouth_open = mah_mouth.update()
+            if not mouth_open:
+                if piece is not None:
+                    raise(Glutton(piece.rect.topleft, piece.rect.topleft))
+                else:
+                    piece = puzzle.get_piece(screen_to_game_pos(tobii_pos))
+                    # piece = puzzle.get_piece(pg.mouse.get_pos())
+            else:
+                if piece is not None:
+                    piece.drop()
+                    piece = None
 
 if os.getcwd() != "C:\\Users\\mikke\\projects\\om-nom-puzzle\\omnon":
     print(os.getcwd())
