@@ -13,6 +13,7 @@ from config import colors
 from tobii import MahEye
 from detect_open_mouth import MahMouth
 
+MOUSE_DEBUG = True
 SCREEN_SIZE = (1600, 900)
 
 media_dir = Path('media')
@@ -188,8 +189,7 @@ def screen_to_game_pos(pos):
 
     x = min(game_rect.width, max(0, x))
     y = min(game_rect.height, max(0, y))
-    
-    print(x, y)
+
     return x,y
 
 
@@ -211,22 +211,32 @@ def main():
     h = screen.get_height() - offset*2
     scramble_rect = pg.Rect((main_surf_rect.right + offset, offset), (w,h))
 
-    mah_eye = MahEye()
-    mah_mouth = MahMouth()
+    if not MOUSE_DEBUG:
+        mah_eye = MahEye()
+        mah_mouth = MahMouth()
+    else:
+        pg.mouse.set_visible(False)
+    
     mouth_open = True
 
     puzzle = Puzzle(main_surf, main_surf_rect, scramble_rect, (3,3))
     piece = None
-
     while(True):
-        tobii_pos, fresh = mah_eye.get_pos()
-        pg.draw.circle(screen, (255,0,0), screen_to_game_pos(tobii_pos), 10)
+        if not MOUSE_DEBUG:
+            tobii_pos, fresh = mah_eye.get_pos()
+            point_pos = screen_to_game_pos(tobii_pos)
+        else:
+            point_pos = pg.mouse.get_pos()
+        
+        pg.draw.circle(screen, (255,0,0), point_pos, 10)
         pg.display.flip()
         clock.tick(120)
 
+        print(point_pos)
+
         if piece is not None:
             # piece.rect.center = pg.mouse.get_pos()
-            piece.rect.center = screen_to_game_pos(tobii_pos)
+            piece.rect.center = point_pos
 
 
         draw_background(screen, offset, puzzle.grid_size)
@@ -246,13 +256,18 @@ def main():
                 if event.key == ord('r'):
                     puzzle.scramble()
 
-        if mouth_open != mah_mouth.update():
-            mouth_open = mah_mouth.update()
+        if not MOUSE_DEBUG:
+            mouth_state = mah_mouth.update()
+        else:
+            mouth_state = not bool(pg.mouse.get_pressed()[0])
+
+        if mouth_open != mouth_state:
+            mouth_open = mouth_state
             if not mouth_open:
                 if piece is not None:
                     raise(Glutton(piece.rect.topleft, piece.rect.topleft))
                 else:
-                    piece = puzzle.get_piece(screen_to_game_pos(tobii_pos))
+                    piece = puzzle.get_piece(point_pos)
                     # piece = puzzle.get_piece(pg.mouse.get_pos())
             else:
                 if piece is not None:
