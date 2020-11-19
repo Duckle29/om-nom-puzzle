@@ -1,4 +1,6 @@
 import time
+import numpy as np
+from threading import Thread
 
 from scipy.spatial import distance as dist
 import imutils
@@ -13,7 +15,7 @@ class MahMouth():
 
     # define one constants, for mouth aspect ratio to indicate open mouth
     MOUTH_AR_THRESH = 0.65
-    BROWS_AR_THRESH = 0.70
+    BROWS_AR_THRESH = 0.60
     # grab the indexes of the facial landmarks for the mouth
     (mStart, mEnd) = (48, 67)
     (bStart, bEnd) = (17,26)
@@ -29,7 +31,7 @@ class MahMouth():
     def __del__(self):
         # do a bit of cleanup
         cv2.destroyAllWindows()
-        vs.stop()
+        self.vs.stop()
 
     def construct_arguments(self):
             # construct the argument parse and parse the arguments
@@ -140,7 +142,7 @@ class MahMouth():
             cv2.line(frame, (mouth[0][0], mouth[0][1]), (mouth[6][0], mouth[6][1]), (0,0,255), 2)
 
             # Draw text if mouth is open
-            if mouthAR > mouthcheck.MOUTH_AR_THRESH:
+            if mouthAR > self.MOUTH_AR_THRESH:
                 self.mouthopen = True
                 cv2.putText(frame, "Mouth is Open!", (30,60),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)
@@ -148,7 +150,8 @@ class MahMouth():
                 self.mouthopen = False
                 
             # Draw text if brows are raised
-            if browsAR > mouthcheck.BROWS_AR_THRESH:
+            
+            if browsAR > self.BROWS_AR_THRESH:
                 self.browsup = True
                 cv2.putText(frame, "Reset!", (30,90),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)

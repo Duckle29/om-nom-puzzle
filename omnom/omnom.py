@@ -13,7 +13,7 @@ from config import colors
 from tobii import MahEye
 from detect_open_mouth import MahMouth
 
-MOUSE_DEBUG = True
+MOUSE_DEBUG = False
 SCREEN_SIZE = (1600, 900)
 
 media_dir = Path('media')
@@ -232,7 +232,7 @@ def main():
         pg.display.flip()
         clock.tick(120)
 
-        print(point_pos)
+        #print(point_pos)
 
         if piece is not None:
             # piece.rect.center = pg.mouse.get_pos()
@@ -257,7 +257,7 @@ def main():
                     puzzle.scramble()
 
         if not MOUSE_DEBUG:
-            mouth_state = mah_mouth.update()
+            mouth_state, reset = mah_mouth.update()
         else:
             mouth_state = not bool(pg.mouse.get_pressed()[0])
 
@@ -273,6 +273,9 @@ def main():
                 if piece is not None:
                     piece.drop()
                     piece = None
+        
+        if reset:
+            puzzle.scramble()
 
 if os.getcwd() != "C:\\Users\\mikke\\projects\\om-nom-puzzle\\omnon":
     print(os.getcwd())
