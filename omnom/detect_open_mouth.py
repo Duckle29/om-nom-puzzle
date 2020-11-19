@@ -24,7 +24,8 @@ class MahMouth():
 		self.construct_arguments()
 		self.detector_predictor()
 		self.start_camera()
-		self.isopen = True
+		self.mouthopen = True
+		self.browsup = False
 
 	def __del__(self):
 		# do a bit of cleanup
@@ -141,26 +142,29 @@ class MahMouth():
 
 			# Draw text if mouth is open
 			if mouthAR > mouthcheck.MOUTH_AR_THRESH:
-				self.isopen = True
+				self.mouthopen = True
 				cv2.putText(frame, "Mouth is Open!", (30,60),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)
 			else:
-				self.isopen = False
+				self.mouthopen = False
 				
 			# Draw text if brows are raised
 			if browsAR > mouthcheck.BROWS_AR_THRESH:
+				self.browsup = True
 				cv2.putText(frame, "Reset!", (30,90),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)
+			else:
+				self.browsup = False
 
 		# show the frame
 		cv2.imshow("Frame", frame)
-		return self.isopen
+		return self.mouthopen, self.browsup
 
 if __name__ == "__main__":
 	mouthcheck = MahMouth()
 
 	while True:
-		mouthopen = mouthcheck.update()
+		mouthopen, browsup = mouthcheck.update()
 		#print(mouthopen)
 		# if the `q` key was pressed, break from the loop
 		key = cv2.waitKey(1) & 0xFF
