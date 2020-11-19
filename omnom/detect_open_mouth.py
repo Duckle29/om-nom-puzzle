@@ -12,60 +12,23 @@ import cv2
 class MahMouth():
 
     # define one constants, for mouth aspect ratio to indicate open mouth
-<<<<<<< HEAD
-    MOUTH_AR_THRESH = 0.79
-    # grab the indexes of the facial landmarks for the mouth
-    (mStart, mEnd) = (49, 68)
-=======
     MOUTH_AR_THRESH = 0.65
     BROWS_AR_THRESH = 0.70
     # grab the indexes of the facial landmarks for the mouth
     (mStart, mEnd) = (48, 67)
     (bStart, bEnd) = (17,26)
     (eStart, eEnd) = (36, 47)
->>>>>>> origin/mouthopen
 
     def __init__(self):
         self.construct_arguments()
         self.detector_predictor()
         self.start_camera()
-<<<<<<< HEAD
-        self.isopen = True
-=======
         self.mouthopen = True
         self.browsup = False
->>>>>>> origin/mouthopen
 
     def __del__(self):
         # do a bit of cleanup
         cv2.destroyAllWindows()
-<<<<<<< HEAD
-        self.vs.stop()
-
-    def mouth_aspect_ratio(self, mouth):
-        # compute the euclidean distances between the two sets of
-        # vertical mouth landmarks (x, y)-coordinates
-        A = dist.euclidean(mouth[2], mouth[10])  # 51, 59
-        B = dist.euclidean(mouth[4], mouth[8])  # 53, 57
-        # compute the euclidean distance between the horizontal
-        # mouth landmark (x, y)-coordinates
-        C = dist.euclidean(mouth[0], mouth[6])  # 49, 55
-
-        # compute the mouth aspect ratio
-        mar = (A + B) / (2.0 * C)
-
-        # return the mouth aspect ratio
-        return mar
-
-    def construct_arguments(self):
-        # construct the argument parse and parse the arguments
-        self.ap = argparse.ArgumentParser()
-        self.ap.add_argument(
-            "-p", "--shape-predictor", required=False, default='shape_predictor_68_face_landmarks.dat',
-            help="path to facial landmark predictor")
-        self.ap.add_argument(
-            "-w", "--webcam", type=int, default=0,
-=======
         vs.stop()
 
     def construct_arguments(self):
@@ -74,7 +37,6 @@ class MahMouth():
         self.ap.add_argument("-p", "--shape-predictor", required=False, default='shape_predictor_68_face_landmarks.dat',
             help="path to facial landmark predictor")
         self.ap.add_argument("-w", "--webcam", type=int, default=0,
->>>>>>> origin/mouthopen
             help="index of webcam on system")
         self.args = vars(self.ap.parse_args())
 
@@ -86,13 +48,6 @@ class MahMouth():
         self.predictor = dlib.shape_predictor(self.args["shape_predictor"])
 
     def start_camera(self):
-<<<<<<< HEAD
-        # start the video stream thread
-        print("[INFO] starting video stream thread...")
-        self.vs = VideoStream(src=self.args["webcam"]).start()
-
-        time.sleep(1.0)
-=======
             # start the video stream thread
         print("[INFO] starting video stream thread...")
         self.vs = VideoStream(src=self.args["webcam"]).start()
@@ -121,7 +76,6 @@ class MahMouth():
 
         diff = (left + right) / (2.0 * eye_dist)
         return diff
->>>>>>> origin/mouthopen
 
     def update(self):
 
@@ -131,10 +85,6 @@ class MahMouth():
 
         # detect faces in the grayscale frame
         rects = self.detector(gray, 0)
-<<<<<<< HEAD
-        print(rects)
-=======
->>>>>>> origin/mouthopen
 
         # loop over the face detections
         for rect in rects:
@@ -143,34 +93,6 @@ class MahMouth():
             shape = self.predictor(gray, rect)
             shape = face_utils.shape_to_np(shape)
 
-<<<<<<< HEAD
-            # extract the mouth coordinates, then use the
-            # coordinates to compute the mouth aspect ratio
-            mouth = shape[self.mStart:self.mEnd]
-
-            mouthMAR = self.mouth_aspect_ratio(mouth)
-            mar = mouthMAR
-            # compute the convex hull for the mouth, then
-            # visualize the mouth
-            mouthHull = cv2.convexHull(mouth)
-
-            cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 2)
-            cv2.putText(frame, "MAR: {:.2f}".format(mar), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
-            # Draw text if mouth is open
-            if mar > self.MOUTH_AR_THRESH:
-                self.isopen = True
-                cv2.putText(
-                    frame, "Mouth is Open!", (30, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            else:
-                self.isopen = False
-
-        # show the frame
-        #cv2.imshow("Frame", frame)
-
-        return self.isopen
-=======
             (x, y, w, h) = cv2.boundingRect(np.array(shape))
             #frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0), 2)
 
@@ -236,24 +158,14 @@ class MahMouth():
         # show the frame
         cv2.imshow("Frame", frame)
         return self.mouthopen, self.browsup
->>>>>>> origin/mouthopen
 
 if __name__ == "__main__":
     mouthcheck = MahMouth()
 
     while True:
-<<<<<<< HEAD
-        mouthopen = mouthcheck.update()
-        print(mouthopen)
-        # if the `q` key was pressed, break from the loop
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):
-            break
-=======
         mouthopen, browsup = mouthcheck.update()
         #print(mouthopen)
         # if the `q` key was pressed, break from the loop
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
             break
->>>>>>> origin/mouthopen
