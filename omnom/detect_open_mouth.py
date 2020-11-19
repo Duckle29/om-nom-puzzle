@@ -13,16 +13,18 @@ import cv2
 class MahMouth():
 
 	# define one constants, for mouth aspect ratio to indicate open mouth
-	MOUTH_AR_THRESH = 0.79
+	MOUTH_AR_THRESH = 0.65
+	BROWS_AR_THRESH = 0.70
 	# grab the indexes of the facial landmarks for the mouth
-	(mStart, mEnd) = (49, 68)
-	(bStart, bEnd) = (18,27)
-	(eStart, eEnd) = (37, 48)
+	(mStart, mEnd) = (48, 67)
+	(bStart, bEnd) = (17,26)
+	(eStart, eEnd) = (36, 47)
 
 	def __init__(self):
 		self.construct_arguments()
 		self.detector_predictor()
 		self.start_camera()
+		self.isopen = True
 
 	def __del__(self):
 		# do a bit of cleanup
@@ -73,13 +75,7 @@ class MahMouth():
 		eye_dist = dist.euclidean(eyes[3], eyes[6]) #40, 43
 
 		diff = (left + right) / (2.0 * eye_dist)
-		if diff > 0.5:
-			reset = True
-		else:
-			reset = False
-
-		print(reset)
-		return reset
+		return diff
 
 	def update(self):
 
@@ -97,6 +93,13 @@ class MahMouth():
 			shape = self.predictor(gray, rect)
 			shape = face_utils.shape_to_np(shape)
 
+			(x, y, w, h) = cv2.boundingRect(np.array(shape))
+			#frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255,0,0), 2)
+
+			roi = frame[y:y + h, x:x + w]
+			roi = imutils.resize(roi, width=250, inter=cv2.INTER_CUBIC)
+			cv2.imshow("ROI", roi)
+
 			# extract the mouth coordinates, then use the
 			# coordinates to compute the mouth aspect ratio
 			mouth = shape[self.mStart:self.mEnd]
@@ -106,8 +109,8 @@ class MahMouth():
 			mouthAR = self.mouth_aspect_ratio(mouth)
 			browsAR = self.brow_movement(brows, eyes)
 
-			right_eye = shape[37:42]
-			left_eye = shape[43:46]
+			right_eye = shape[42:47]
+			left_eye = shape[36:41]
 
 			# compute the convex hull for the mouth, then
 			# visualize the mouth
@@ -115,31 +118,43 @@ class MahMouth():
 			left_eyeHull = cv2.convexHull(left_eye)
 			right_eyeHull = cv2.convexHull(right_eye)
 			
-			#cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 2)
-			#cv2.drawContours(frame, [left_eyeHull], -1, (0, 255, 0), 1)
-			#cv2.drawContours(frame, [right_eyeHull], -1, (0, 255, 0), 1)
-			cv2.putText(frame, "MAR: {:.2f}".format(mouthAR), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+			# Draw outline of hulls
+			cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 2)
+			cv2.drawContours(frame, [left_eyeHull], -1, (0, 255, 0), 2)
+			cv2.drawContours(frame, [right_eyeHull], -1, (0, 255, 0), 2)
 
-			for (x, y) in shape:
-				cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
+			# Write ratios to screen
+			#cv2.putText(frame, "Mouth AR: {:.2f}".format(mouthAR), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+			#cv2.putText(frame, "Brows AR: {:.2f}".format(browsAR), (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+			# Draw landmarks
+			#for (x, y) in shape:
+			#	cv2.circle(frame, (x, y), 1, (0, 255, 0), -1)
+
+			# Draw distances
+			cv2.line(frame, (left_eye[3][0], left_eye[3][1]), (right_eye[0][0], right_eye[0][1]), (0,0,255), 2)
+			cv2.line(frame, (brows[3][0], brows[3][1]), (left_eye[2][0], left_eye[2][1]), (255,0,0), 2)
+			cv2.line(frame, (brows[6][0], brows[6][1]), (right_eye[1][0], right_eye[1][1]), (255,0,0), 2)
+			cv2.line(frame, (mouth[2][0], mouth[2][1]), (mouth[10][0], mouth[10][1]), (255,0,0), 2)
+			cv2.line(frame, (mouth[4][0], mouth[4][1]), (mouth[8][0], mouth[8][1]), (255,0,0), 2)
+			cv2.line(frame, (mouth[0][0], mouth[0][1]), (mouth[6][0], mouth[6][1]), (0,0,255), 2)
 
 			# Draw text if mouth is open
 			if mouthAR > mouthcheck.MOUTH_AR_THRESH:
-				isopen = True
+				self.isopen = True
 				cv2.putText(frame, "Mouth is Open!", (30,60),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)
 			else:
-				isopen = False
+				self.isopen = False
 				
-					# Draw text if mouth is open
-			if browsMOVED == True:
+			# Draw text if brows are raised
+			if browsAR > mouthcheck.BROWS_AR_THRESH:
 				cv2.putText(frame, "Reset!", (30,90),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255),2)
 
 		# show the frame
 		cv2.imshow("Frame", frame)
-
-		return isopen
+		return self.isopen
 
 if __name__ == "__main__":
 	mouthcheck = MahMouth()
